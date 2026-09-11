@@ -93,3 +93,11 @@ git config --global --list
 | #1 Priority filter | 开发者 A | 增加 HIGH/MEDIUM/LOW；支持按优先级筛选 | 空结果返回空列表；默认 MEDIUM；测试覆盖 |
 | #2 Complete task | 开发者 B | 按编号完成任务；重复完成应报错 | 不存在编号报错；重复完成报错；测试覆盖 |
 | #3 CI and guide | 质量负责人 Q | 增加 Maven CI、PR 模板和 README 指南 | PR/main 触发；mvn verify 通过；模板可见 |
+
+## 🤝 协作流程
+1. 从 `main` 分支切出新功能分支：`git switch -c feature/xxx`
+2. 在功能分支完成开发，本地执行 `mvn verify` 自测
+3. 提交代码并推送远程分支，创建 Pull Request
+4. 填写PR模板，关联对应Issue，等待CI自动执行 `mvn -B verify`
+5. CI全部通过后，由团队成员代码评审
+6. 评审通过后合并到main分支，删除旧功能分支
