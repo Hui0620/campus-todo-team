@@ -64,4 +64,12 @@ public class TaskService {
     public List<Task> listAll() {
         return Collections.unmodifiableList(tasks);
     }
+    public boolean completeTask(long id) {
+        Task task = getById(id);
+        if(task == null){
+            return false;
+        }
+        task.setCompleted(true);
+        return true;
+    }
 }
