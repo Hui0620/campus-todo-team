@@ -132,4 +132,40 @@ class TaskServiceTest {
                 () -> all.add(new Task(99, "Injected")),
                 "返回的列表应不可修改，防止外部绕过 addTask 改变内部状态");
     }
+    // ================================================================
+    // 按优先级筛选（Issue #1）
+    // ================================================================
+    @Test
+    @DisplayName("filterByPriority：匹配优先级返回对应任务")
+    void filterByPriority_returnMatchedTasks() {
+        service.addTask("写作业", Task.Priority.HIGH);
+        service.addTask("打水", Task.Priority.LOW);
+        service.addTask("复习"); // 默认 MEDIUM
+
+        List<Task> highList = service.filterByPriority(Task.Priority.HIGH);
+        assertEquals(1, highList.size());
+        assertEquals("写作业", highList.get(0).getTitle());
+
+        List<Task> mediumList = service.filterByPriority(Task.Priority.MEDIUM);
+        assertEquals(1, mediumList.size());
+        assertEquals("复习", mediumList.get(0).getTitle());
+    }
+
+    @Test
+    @DisplayName("filterByPriority：无匹配优先级返回空列表")
+    void filterByPriority_noMatch_returnEmptyList() {
+        service.addTask("写作业", Task.Priority.HIGH);
+
+        List<Task> lowList = service.filterByPriority(Task.Priority.LOW);
+        assertNotNull(lowList);
+        assertTrue(lowList.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Task新建不传优先级，默认是MEDIUM")
+    void task_defaultPriorityIsMedium() {
+        Task task = service.addTask("默认优先级任务");
+        assertEquals(Task.Priority.MEDIUM, task.getPriority());
+    }
+
 }
