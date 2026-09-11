@@ -114,7 +114,6 @@ class TaskServiceTest {
         service.addTask("Task C");
 
         List<Task> all = service.listAll();
-
         assertEquals(3, all.size(), "应返回 3 个任务");
         assertEquals("Task A", all.get(0).getTitle());
         assertEquals("Task B", all.get(1).getTitle());
@@ -127,11 +126,11 @@ class TaskServiceTest {
         service.addTask("Task A");
 
         List<Task> all = service.listAll();
-
         assertThrows(UnsupportedOperationException.class,
                 () -> all.add(new Task(99, "Injected")),
                 "返回的列表应不可修改，防止外部绕过 addTask 改变内部状态");
     }
+
     // ================================================================
     // 按优先级筛选（Issue #1）
     // ================================================================
@@ -168,4 +167,34 @@ class TaskServiceTest {
         assertEquals(Task.Priority.MEDIUM, task.getPriority());
     }
 
+    // ================================================================
+    // 完成任务（Issue #2）
+    // ================================================================
+    @Test
+    @DisplayName("completeTaskById：正常完成任务，completed置为true")
+    void completeTaskById_success_markCompleted() {
+        Task task = service.addTask("任务1");
+        service.completeTaskById(task.getId());
+        assertTrue(task.isCompleted());
+    }
+
+    @Test
+    @DisplayName("completeTaskById：重复完成任务抛出异常")
+    void completeTaskById_alreadyCompleted_throwException() {
+        Task task = service.addTask("任务1");
+        service.completeTaskById(task.getId());
+        assertThrows(IllegalStateException.class, () -> service.completeTaskById(task.getId()));
+    }
+
+    @Test
+    @DisplayName("completeTaskById：不存在的任务id抛出异常")
+    void completeTaskById_notExistId_throwException() {
+        assertThrows(IllegalStateException.class, () -> service.completeTaskById(999));
+    }
+
+    @Test
+    @DisplayName("completeTaskById：传入负数ID抛出IllegalArgumentException")
+    void completeTaskById_negativeId_throwException() {
+        assertThrows(IllegalArgumentException.class, () -> service.completeTaskById(-1));
+    }
 }

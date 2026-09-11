@@ -1,7 +1,6 @@
 package edu.hbuas.campustodo.service;
 
 import edu.hbuas.campustodo.model.Task;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -19,7 +18,7 @@ import java.util.stream.Collectors;
  * <p>后续迭代将在此类中扩展：
  * <ul>
  *   <li>Issue #1：{@code filterByPriority(Priority priority)}。</li>
- *   <li>Issue #2：{@code completeTask(long id)}，含重复完成校验。</li>
+ *   <li>Issue #2：{@code completeTaskById(long id)}，含重复完成校验。</li>
  * </ul>
  *
  * <p>本类不是线程安全的；实验场景为单线程控制台程序，无需加锁。
@@ -101,4 +100,28 @@ public class TaskService {
                 .collect(Collectors.toList());
     }
     // ==========================================================
+
+    // ============ 【新增方法】Issue#2 完成任务 ============
+    /**
+     * 根据任务id完成任务。
+     * <p>任务不存在抛出异常；任务已经完成，再次调用会抛出异常。
+     * ID不能为负数。
+     * @param id 任务编号，必须大于0
+     * @throws IllegalArgumentException id小于等于0
+     * @throws IllegalStateException 任务不存在或者任务已经完成
+     */
+    public void completeTaskById(long id) {
+        if(id <= 0){
+            throw new IllegalArgumentException("Task id must be positive.");
+        }
+        Task target = tasks.stream()
+                .filter(t -> t.getId() == id)
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("Task not found."));
+        if(target.isCompleted()){
+            throw new IllegalStateException("Task already completed.");
+        }
+        target.setCompleted(true);
+    }
+    // ======================================================
 }
