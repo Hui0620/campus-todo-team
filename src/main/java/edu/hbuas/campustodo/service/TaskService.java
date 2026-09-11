@@ -5,6 +5,7 @@ import edu.hbuas.campustodo.model.Task;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 任务服务，负责管理任务的生命周期。
@@ -52,6 +53,28 @@ public class TaskService {
         return task;
     }
 
+    // ============ 【新增重载方法】Issue#1 指定优先级新增任务 ============
+    /**
+     * 新增一个任务，并指定优先级。
+     *
+     * <p>标题为 {@code null}、空字符串或仅含空白字符时，抛出
+     * {@link IllegalArgumentException}，以保证任务标题始终有意义。
+     *
+     * @param title    任务标题，非空且非空白
+     * @param priority 任务优先级
+     * @return 已创建并分配 id 的任务对象
+     * @throws IllegalArgumentException 当 title 为 {@code null} 或空白时
+     */
+    public Task addTask(String title, Task.Priority priority) {
+        if (title == null || title.isBlank()) {
+            throw new IllegalArgumentException("Task title must not be null or blank.");
+        }
+        Task task = new Task(nextId++, title.trim(), priority);
+        tasks.add(task);
+        return task;
+    }
+    // =====================================================================
+
     /**
      * 返回当前所有任务的只读视图。
      *
@@ -64,4 +87,18 @@ public class TaskService {
     public List<Task> listAll() {
         return Collections.unmodifiableList(tasks);
     }
+
+    // ============ 【新增方法】Issue#1 按优先级筛选 ============
+    /**
+     * 根据优先级筛选任务。
+     *
+     * @param priority 需要匹配的优先级
+     * @return 匹配优先级的任务集合；无匹配项返回空列表
+     */
+    public List<Task> filterByPriority(Task.Priority priority) {
+        return tasks.stream()
+                .filter(task -> task.getPriority() == priority)
+                .collect(Collectors.toList());
+    }
+    // ==========================================================
 }

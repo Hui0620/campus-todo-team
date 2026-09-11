@@ -17,10 +17,18 @@ package edu.hbuas.campustodo.model;
  * @author CampusTodo Lab
  */
 public class Task {
+    // ============ 新增：优先级枚举 ============
+    public enum Priority {
+        HIGH, MEDIUM, LOW
+    }
+    // ==========================================
 
     private long id;
     private String title;
     private boolean completed;
+    // ============ 新增：优先级字段 ============
+    private Priority priority;
+    // =========================================
 
     /**
      * 默认构造方法，供框架或测试工具使用。
@@ -38,7 +46,19 @@ public class Task {
         this.id = id;
         this.title = title;
         this.completed = false;
+        // ============ 新增：默认优先级 MEDIUM ============
+        this.priority = Priority.MEDIUM;
+        // ================================================
     }
+
+    // ============ 新增：带优先级的构造器 ============
+    public Task(long id, String title, Priority priority) {
+        this.id = id;
+        this.title = title;
+        this.completed = false;
+        this.priority = priority;
+    }
+    // ================================================
 
     public long getId() {
         return id;
@@ -64,8 +84,19 @@ public class Task {
         this.completed = completed;
     }
 
+    // ============ 新增 priority getter/setter ============
+    public Priority getPriority() {
+        return priority;
+    }
+
+    public void setPriority(Priority priority) {
+        this.priority = priority;
+    }
+    // =====================================================
+
     @Override
     public String toString() {
-        return "Task{id=" + id + ", title='" + title + "', completed=" + completed + "}";
+        // toString追加priority，不破坏原有字段
+        return "Task{id=" + id + ", title='" + title + "', completed=" + completed + ", priority=" + priority + "}";
     }
 }
