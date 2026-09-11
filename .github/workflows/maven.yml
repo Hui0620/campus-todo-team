@@ -3,19 +3,29 @@ name: Java CI
 on:
   pull_request:
   push:
+<<<<<<< HEAD
     branches: [ main ]
+=======
+>>>>>>> 199b2c7638e64e5d01b2f12505deff01b7fecdda
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+<<<<<<< HEAD
 
+=======
+>>>>>>> 199b2c7638e64e5d01b2f12505deff01b7fecdda
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
+<<<<<<< HEAD
 
       - name: Build and test with Maven
+=======
+      - name: Build & Test
+>>>>>>> 199b2c7638e64e5d01b2f12505deff01b7fecdda
         run: mvn -B clean test
