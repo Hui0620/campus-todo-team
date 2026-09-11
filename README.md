@@ -10,7 +10,11 @@ CampusTodo 是一个控制台版校园任务管理器，用于《软件工程综
 
 ## 当前版本
 
-当前版本：支持新增、列出和完成任务。
+<<<<<<< HEAD
+当前版本：支持新增、列出、按优先级筛选和完成任务。
+=======
+当前版本：支持新增、列出和按优先级筛选任务。
+>>>>>>> origin/main
 
 > ⚠️ **请勿随意修改上一行内容**。该固定句将在后续合并冲突练习中使用，
 > 开发者 A 与开发者 B 会分别修改这一行，用于练习同一行文本冲突的处理。
@@ -93,3 +97,11 @@ git config --global --list
 | #1 Priority filter | 开发者 A | 增加 HIGH/MEDIUM/LOW；支持按优先级筛选 | 空结果返回空列表；默认 MEDIUM；测试覆盖 |
 | #2 Complete task | 开发者 B | 按编号完成任务；重复完成应报错 | 不存在编号报错；重复完成报错；测试覆盖 |
 | #3 CI and guide | 质量负责人 Q | 增加 Maven CI、PR 模板和 README 指南 | PR/main 触发；mvn verify 通过；模板可见 |
+
+## 🤝 协作流程
+1. 从 `main` 分支切出新功能分支：`git switch -c feature/xxx`
+2. 在功能分支完成开发，本地执行 `mvn verify` 自测
+3. 提交代码并推送远程分支，创建 Pull Request
+4. 填写PR模板，关联对应Issue，等待CI自动执行 `mvn -B verify`
+5. CI全部通过后，由团队成员代码评审
+6. 评审通过后合并到main分支，删除旧功能分支

@@ -114,7 +114,6 @@ class TaskServiceTest {
         service.addTask("Task C");
 
         List<Task> all = service.listAll();
-
         assertEquals(3, all.size(), "应返回 3 个任务");
         assertEquals("Task A", all.get(0).getTitle());
         assertEquals("Task B", all.get(1).getTitle());
@@ -127,26 +126,75 @@ class TaskServiceTest {
         service.addTask("Task A");
 
         List<Task> all = service.listAll();
-
         assertThrows(UnsupportedOperationException.class,
                 () -> all.add(new Task(99, "Injected")),
                 "返回的列表应不可修改，防止外部绕过 addTask 改变内部状态");
     }
 
-    // ======================【在这里追加两个新测试】======================
+    // ================================================================
+    // 按优先级筛选（Issue #1）
+    // ================================================================
     @Test
-    @DisplayName("completeTask：存在任务id，标记任务为已完成，返回true")
-    void completeTask_existId_returnTrue() {
-        Task task = service.addTask("写作业");
-        boolean result = service.completeTask(task.getId());
-        assertTrue(result);
+    @DisplayName("filterByPriority：匹配优先级返回对应任务")
+    void filterByPriority_returnMatchedTasks() {
+        service.addTask("写作业", Task.Priority.HIGH);
+        service.addTask("打水", Task.Priority.LOW);
+        service.addTask("复习"); // 默认 MEDIUM
+
+        List<Task> highList = service.filterByPriority(Task.Priority.HIGH);
+        assertEquals(1, highList.size());
+        assertEquals("写作业", highList.get(0).getTitle());
+
+        List<Task> mediumList = service.filterByPriority(Task.Priority.MEDIUM);
+        assertEquals(1, mediumList.size());
+        assertEquals("复习", mediumList.get(0).getTitle());
+    }
+
+    @Test
+    @DisplayName("filterByPriority：无匹配优先级返回空列表")
+    void filterByPriority_noMatch_returnEmptyList() {
+        service.addTask("写作业", Task.Priority.HIGH);
+
+        List<Task> lowList = service.filterByPriority(Task.Priority.LOW);
+        assertNotNull(lowList);
+        assertTrue(lowList.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Task新建不传优先级，默认是MEDIUM")
+    void task_defaultPriorityIsMedium() {
+        Task task = service.addTask("默认优先级任务");
+        assertEquals(Task.Priority.MEDIUM, task.getPriority());
+    }
+
+    // ================================================================
+    // 完成任务（Issue #2）
+    // ================================================================
+    @Test
+    @DisplayName("completeTaskById：正常完成任务，completed置为true")
+    void completeTaskById_success_markCompleted() {
+        Task task = service.addTask("任务1");
+        service.completeTaskById(task.getId());
         assertTrue(task.isCompleted());
     }
 
     @Test
-    @DisplayName("completeTask：不存在任务id，返回false")
-    void completeTask_notExistId_returnFalse() {
-        boolean result = service.completeTask(999);
-        assertFalse(result);
+    @DisplayName("completeTaskById：重复完成任务抛出异常")
+    void completeTaskById_alreadyCompleted_throwException() {
+        Task task = service.addTask("任务1");
+        service.completeTaskById(task.getId());
+        assertThrows(IllegalStateException.class, () -> service.completeTaskById(task.getId()));
+    }
+
+    @Test
+    @DisplayName("completeTaskById：不存在的任务id抛出异常")
+    void completeTaskById_notExistId_throwException() {
+        assertThrows(IllegalStateException.class, () -> service.completeTaskById(999));
+    }
+
+    @Test
+    @DisplayName("completeTaskById：传入负数ID抛出IllegalArgumentException")
+    void completeTaskById_negativeId_throwException() {
+        assertThrows(IllegalArgumentException.class, () -> service.completeTaskById(-1));
     }
 }
