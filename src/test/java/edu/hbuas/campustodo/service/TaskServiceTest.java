@@ -132,4 +132,21 @@ class TaskServiceTest {
                 () -> all.add(new Task(99, "Injected")),
                 "返回的列表应不可修改，防止外部绕过 addTask 改变内部状态");
     }
+
+    // ======================【在这里追加两个新测试】======================
+    @Test
+    @DisplayName("completeTask：存在任务id，标记任务为已完成，返回true")
+    void completeTask_existId_returnTrue() {
+        Task task = service.addTask("写作业");
+        boolean result = service.completeTask(task.getId());
+        assertTrue(result);
+        assertTrue(task.isCompleted());
+    }
+
+    @Test
+    @DisplayName("completeTask：不存在任务id，返回false")
+    void completeTask_notExistId_returnFalse() {
+        boolean result = service.completeTask(999);
+        assertFalse(result);
+    }
 }
