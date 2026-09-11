@@ -1,7 +1,6 @@
 package edu.hbuas.campustodo.service;
 
 import edu.hbuas.campustodo.model.Task;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -18,7 +17,7 @@ import java.util.List;
  * <p>后续迭代将在此类中扩展：
  * <ul>
  *   <li>Issue #1：{@code filterByPriority(Priority priority)}。</li>
- *   <li>Issue #2：{@code completeTask(long id)}，含重复完成校验。</li>
+ *   <li>Issue #2：{@link #completeTask(long id)}，含重复完成校验。</li>
  * </ul>
  *
  * <p>本类不是线程安全的；实验场景为单线程控制台程序，无需加锁。
@@ -64,9 +63,40 @@ public class TaskService {
     public List<Task> listAll() {
         return Collections.unmodifiableList(tasks);
     }
+
+    /**
+     * 根据任务id查找任务
+     * @param id 任务id
+     * @return 找到返回Task，找不到返回null
+     */
+    private Task getById(long id) {
+        for (Task task : tasks) {
+            if (task.getId() == id) {
+                return task;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 将指定id任务标记为已完成，包含重复完成校验。
+     * <p>
+     * 三种情况：
+     * <ol>
+     *     <li>不存在该id任务 → 返回false</li>
+     *     <li>任务已经是完成状态 → 返回false（不重复修改）</li>
+     *     <li>任务未完成 → 修改状态，返回true</li>
+     * </ol>
+     *
+     * @param id 任务编号
+     * @return 操作是否成功
+     */
     public boolean completeTask(long id) {
         Task task = getById(id);
-        if(task == null){
+        if (task == null) {
+            return false;
+        }
+        if (task.isCompleted()) {
             return false;
         }
         task.setCompleted(true);
